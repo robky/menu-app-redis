@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  server_test:
+    build: .
+    command: >
+      sh -c "cd app &&
+             pytest -vv"
+    volumes:
+      - ./:/app/
+    env_file:
+      - ./.env_test
+    networks:
+      - menu_network
+
+networks:
+  menu_network:
+    external: true
