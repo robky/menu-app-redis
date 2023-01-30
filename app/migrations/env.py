@@ -4,10 +4,11 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-sys.path = ["", ".."] + sys.path[1:]
-
 from app.database import SQLALCHEMY_DATABASE_URL
 from app.models import *
+
+sys.path = ["", ".."] + sys.path[1:]
+
 
 config = context.config
 
@@ -58,7 +59,8 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
         )
 
         with context.begin_transaction():

@@ -51,7 +51,8 @@ class TestCache:
         assert dishes_bd.content == dishes_cache.content
 
         new_dish = client.post(
-            f"/{menu_id}/submenus/{submenu_id}/dishes", json=data_dish
+            f"/{menu_id}/submenus/{submenu_id}/dishes",
+            json=data_dish,
         )
         assert cache.exists(f"submenu:{submenu_id}:dishes") == 0
 
@@ -59,12 +60,12 @@ class TestCache:
         assert cache.exists(f"dish:{dish_id}") == 0
         assert cache.llen(f"menu:{menu_id}:dish.list") == 0
         dish_bd = client.get(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
         )
         assert cache.exists(f"dish:{dish_id}") == 1
         assert cache.llen(f"menu:{menu_id}:dish.list") == 1
         dish_cache = client.get(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
         )
         assert dish_bd.content == dish_cache.content
 

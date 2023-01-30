@@ -1,0 +1,37 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+        - id: trailing-whitespace # Убирает лишние пробелы
+        - id: end-of-file-fixer # Добавляет пустую строку в конце файла
+        - id: check-yaml # Проверяет синтаксис .yaml файлов
+        - id: requirements-txt-fixer # Сортирует записи в requirements.txt и удаляет неверные записи
+
+# Отсортировывает импорты в проекте
+-   repo: https://github.com/pycqa/isort
+    rev: 5.5.2
+    hooks:
+      - id: isort
+        exclude: __init__.py
+        args: [ --profile, black, --filter-files ]
+
+# Обновляет синтаксис Python кода в соответствии с последними версиями
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+    -   id: pyupgrade
+        args: [--py310-plus]
+
+# Форматирует код под PEP8
+-   repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: v2.0.1
+    hooks:
+    -   id: autopep8
+
+# Сканер стилистических ошибок, нарушающих договоренности PEP8
+-   repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+        exclude: __init__.py, */migrations/
+        args: [ "--ignore=E501,F821,F403,F405" ]

@@ -3,9 +3,15 @@ from fastapi.testclient import TestClient
 
 from app.api.api_v1.menu import SUBMENU_NOT_F, TITLE_REGISTERED
 from app.crud import DEL_SUBMENU_RESULT
-from app.tests.data import (data_menu, data_sub_description, data_sub_title,
-                            data_submenu, data_up_sub_description,
-                            data_up_sub_title, data_up_submenu)
+from app.tests.data import (
+    data_menu,
+    data_sub_description,
+    data_sub_title,
+    data_submenu,
+    data_up_sub_description,
+    data_up_sub_title,
+    data_up_submenu,
+)
 
 
 class TestSubmenu:
@@ -49,7 +55,8 @@ class TestSubmenu:
         assert response.json()["description"] == data_sub_description
 
         submenu = client.patch(
-            f"/{menu_id}/submenus/{submenu_id}", json=data_up_submenu
+            f"/{menu_id}/submenus/{submenu_id}",
+            json=data_up_submenu,
         )
         assert submenu.status_code == status.HTTP_200_OK
         assert submenu.json()["title"] == data_up_sub_title

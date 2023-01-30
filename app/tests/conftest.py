@@ -1,10 +1,12 @@
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 
 import pytest
 from alembic import command
 from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from redis import Redis
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists
@@ -13,7 +15,6 @@ from app.api.api_v1 import menu
 from app.config import settings
 from app.database import get_db
 from app.redis import get_redis
-from redis import Redis
 
 SQLALCHEMY_DATABASE_URL = settings.DATABASE_URL
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -57,7 +58,9 @@ def cache_pool(app: FastAPI) -> Generator[Redis, Any, None]:
 
 @pytest.fixture(scope="function")
 def client(
-    app: FastAPI, db_session: SessionTesting, cache_pool: Redis
+    app: FastAPI,
+    db_session: SessionTesting,
+    cache_pool: Redis,
 ) -> Generator[TestClient, Any, None]:
     def _get_test_db():
         return db_session

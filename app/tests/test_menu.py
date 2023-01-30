@@ -3,8 +3,14 @@ from fastapi.testclient import TestClient
 
 from app.api.api_v1.menu import MENU_NOT_F, TITLE_REGISTERED
 from app.crud import DEL_MENU_RESULT
-from app.tests.data import (data_description, data_menu, data_title,
-                            data_up_description, data_up_menu, data_up_title)
+from app.tests.data import (
+    data_description,
+    data_menu,
+    data_title,
+    data_up_description,
+    data_up_menu,
+    data_up_title,
+)
 
 
 class TestMenu:

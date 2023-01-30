@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: ce97522d6235
-Revises: 
+Revises:
 Create Date: 2023-01-22 16:16:50.236189
 
 """
@@ -41,7 +41,10 @@ def upgrade() -> None:
         sa.UniqueConstraint("id"),
     )
     op.create_index(
-        op.f("ix_submenus_title"), "submenus", ["title"], unique=False
+        op.f("ix_submenus_title"),
+        "submenus",
+        ["title"],
+        unique=False,
     )
     op.create_table(
         "dishes",

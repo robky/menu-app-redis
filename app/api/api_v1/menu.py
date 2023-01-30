@@ -1,12 +1,12 @@
 import pickle
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from redis import Redis
 from sqlalchemy.orm import Session
 
 from app import crud, models, schemas
 from app.database import get_db
 from app.redis import get_redis
-from redis import Redis
 
 MENU_NOT_F = "menu not found"
 SUBMENU_NOT_F = "submenu not found"
@@ -16,9 +16,17 @@ TITLE_REGISTERED = "Title already registered"
 router = APIRouter()
 
 
-@router.get("/", response_model=list[schemas.Menu], tags=["Menu"])
+@router.get(
+    path="/",
+    response_model=list[schemas.Menu],
+    responses=schemas.menus_response_example,
+    summary="Список меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Меню"],
+)
 def read_menus(
-    db: Session = Depends(get_db), cache: Redis = Depends(get_redis)
+    db: Session = Depends(get_db),
+    cache: Redis = Depends(get_redis),
 ):
     if cache_data := cache.get("menus"):
         return pickle.loads(cache_data)
@@ -28,10 +36,12 @@ def read_menus(
 
 
 @router.post(
-    "/",
+    path="/",
     response_model=schemas.Menu,
+    responses=schemas.menu_create_response_example,
+    summary="Создать меню",
     status_code=status.HTTP_201_CREATED,
-    tags=["Menu"],
+    tags=["Меню"],
 )
 def create_menu(
     menu: schemas.MenuCreate,
@@ -48,7 +58,14 @@ def create_menu(
     return crud.create_menu(db=db, menu=menu)
 
 
-@router.get("/{menu_id}", response_model=schemas.Menu, tags=["Menu"])
+@router.get(
+    path="/{menu_id}",
+    response_model=schemas.Menu,
+    responses=schemas.menu_response_example,
+    summary="Информация по конкретному меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Меню"],
+)
 def read_menu(
     menu_id: str,
     db: Session = Depends(get_db),
@@ -61,7 +78,14 @@ def read_menu(
     return result
 
 
-@router.patch("/{menu_id}", response_model=schemas.Menu, tags=["Menu"])
+@router.patch(
+    path="/{menu_id}",
+    response_model=schemas.Menu,
+    responses=schemas.menu_update_response_example,
+    summary="Изменить конкретное меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Меню"],
+)
 def update_menu(
     menu_id: str,
     menu: schemas.MenuCreate,
@@ -74,7 +98,13 @@ def update_menu(
     return crud.patch_menu(db=db, db_menu=db_menu, menu=menu)
 
 
-@router.delete("/{menu_id}", tags=["Menu"])
+@router.delete(
+    path="/{menu_id}",
+    summary="Удалить меню",
+    responses=schemas.menu_delete_response_example,
+    status_code=status.HTTP_200_OK,
+    tags=["Меню"],
+)
 def delete_menu(
     menu_id: str,
     db: Session = Depends(get_db),
@@ -90,9 +120,12 @@ def delete_menu(
 
 
 @router.get(
-    "/{menu_id}/submenus",
+    path="/{menu_id}/submenus",
     response_model=list[schemas.SubMenu],
-    tags=["SubMenu"],
+    responses=schemas.submenus_response_example,
+    summary="Список подменю конкретного меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Подменю"],
 )
 def read_submenus(
     menu_id: str,
@@ -108,14 +141,16 @@ def read_submenus(
 
 
 @router.post(
-    "/{menu_id}/submenus",
+    path="/{menu_id}/submenus",
     response_model=schemas.SubMenu,
+    responses=schemas.submenu_create_response_example,
+    summary="Создать подменю в конкретном меню",
     status_code=status.HTTP_201_CREATED,
-    tags=["SubMenu"],
+    tags=["Подменю"],
 )
 def create_submenu(
     menu_id: str,
-    submenu: schemas.MenuCreate,
+    submenu: schemas.SubMenuCreate,
     db: Session = Depends(get_db),
     cache: Redis = Depends(get_redis),
 ):
@@ -131,9 +166,12 @@ def create_submenu(
 
 
 @router.get(
-    "/{menu_id}/submenus/{submenu_id}",
+    path="/{menu_id}/submenus/{submenu_id}",
     response_model=schemas.SubMenu,
-    tags=["SubMenu"],
+    responses=schemas.submenu_response_example,
+    summary="Информация по конкретному подменю в конкретном меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Подменю"],
 )
 def read_submenu(
     menu_id: str,
@@ -149,7 +187,14 @@ def read_submenu(
     return result
 
 
-@router.patch("/{menu_id}/submenus/{submenu_id}", tags=["SubMenu"])
+@router.patch(
+    path="/{menu_id}/submenus/{submenu_id}",
+    response_model=schemas.SubMenu,
+    responses=schemas.submenu_update_response_example,
+    summary="Изменить конкретное подменю в конкретном меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Подменю"],
+)
 def update_submenu(
     menu_id: str,
     submenu_id: str,
@@ -158,14 +203,22 @@ def update_submenu(
     cache: Redis = Depends(get_redis),
 ):
     db_submenu = get_submenu_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        db=db,
     )
     cache.delete(f"submenu:{submenu_id}")
     cache.delete(f"menu:{menu_id}:submenus")
     return crud.patch_submenu(db=db, db_submenu=db_submenu, submenu=submenu)
 
 
-@router.delete("/{menu_id}/submenus/{submenu_id}", tags=["SubMenu"])
+@router.delete(
+    path="/{menu_id}/submenus/{submenu_id}",
+    responses=schemas.submenu_delete_response_example,
+    summary="Удалить конкретное подменю в конкретном меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Подменю"],
+)
 def delete_submenu(
     menu_id: str,
     submenu_id: str,
@@ -173,7 +226,9 @@ def delete_submenu(
     cache: Redis = Depends(get_redis),
 ):
     db_submenu = get_submenu_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        db=db,
     )
     cache.delete(f"submenu:{submenu_id}")
     cache.delete(f"menu:{menu_id}")
@@ -186,9 +241,12 @@ def delete_submenu(
 
 
 @router.get(
-    "/{menu_id}/submenus/{submenu_id}/dishes",
+    path="/{menu_id}/submenus/{submenu_id}/dishes",
     response_model=list[schemas.Dish],
-    tags=["Dish"],
+    responses=schemas.dishes_response_example,
+    summary="Список блюд в конкретном подменю конкретного меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Блюдо"],
 )
 def read_dishes(
     menu_id: str,
@@ -199,7 +257,9 @@ def read_dishes(
     if cache_data := cache.get(f"submenu:{submenu_id}:dishes"):
         return pickle.loads(cache_data)
     db_submenu = get_submenu_or_empty_list(
-        menu_id=menu_id, submenu_id=submenu_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        db=db,
     )
     if not db_submenu:
         return db_submenu
@@ -209,10 +269,12 @@ def read_dishes(
 
 
 @router.post(
-    "/{menu_id}/submenus/{submenu_id}/dishes",
+    path="/{menu_id}/submenus/{submenu_id}/dishes",
     response_model=schemas.Dish,
+    responses=schemas.dish_create_response_example,
+    summary="Создать блюдо в конкретном подменю конкретного меню",
     status_code=status.HTTP_201_CREATED,
-    tags=["Dish"],
+    tags=["Блюдо"],
 )
 def create_dish(
     menu_id: str,
@@ -222,10 +284,14 @@ def create_dish(
     cache: Redis = Depends(get_redis),
 ):
     db_submenu = get_submenu_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        db=db,
     )
     db_dish = crud.get_dish_by_title(
-        db, db_submenu=db_submenu, title=dish.title
+        db,
+        db_submenu=db_submenu,
+        title=dish.title,
     )
     if db_dish:
         raise HTTPException(
@@ -240,9 +306,12 @@ def create_dish(
 
 
 @router.get(
-    "/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    path="/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
     response_model=schemas.Dish,
-    tags=["Dish"],
+    responses=schemas.dish_response_example,
+    summary="Конкретное блюдо в конкретном подменю конкретного меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Блюдо"],
 )
 def read_dish(
     menu_id: str,
@@ -254,7 +323,10 @@ def read_dish(
     if cache_data := cache.get(f"dish:{dish_id}"):
         return pickle.loads(cache_data)
     result = get_dish_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        dish_id=dish_id,
+        db=db,
     )
     cache.set(f"dish:{dish_id}", pickle.dumps(result))
     cache.rpush(f"menu:{menu_id}:dish.list", f"dish:{dish_id}")
@@ -263,7 +335,12 @@ def read_dish(
 
 
 @router.patch(
-    "/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}", tags=["Dish"]
+    path="/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    response_model=schemas.Dish,
+    responses=schemas.dish_update_response_example,
+    summary="Изменить конкретное блюдо в конкретном подменю конкретного меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Блюдо"],
 )
 def update_dish(
     menu_id: str,
@@ -274,7 +351,10 @@ def update_dish(
     cache: Redis = Depends(get_redis),
 ):
     db_dish = get_dish_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        dish_id=dish_id,
+        db=db,
     )
     cache.delete(f"submenu:{submenu_id}:dishes")
     cache.delete(f"dish:{dish_id}")
@@ -282,7 +362,11 @@ def update_dish(
 
 
 @router.delete(
-    "/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}", tags=["Dish"]
+    path="/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
+    responses=schemas.dish_delete_response_example,
+    summary="Удалить конкретное блюдо в конкретном подменю конкретного меню",
+    status_code=status.HTTP_200_OK,
+    tags=["Блюдо"],
 )
 def delete_dish(
     menu_id: str,
@@ -292,7 +376,10 @@ def delete_dish(
     cache: Redis = Depends(get_redis),
 ):
     db_dish = get_dish_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        dish_id=dish_id,
+        db=db,
     )
     cache.delete(f"dish:{dish_id}")
     cache.delete(f"submenu:{submenu_id}:dishes")
@@ -307,28 +394,36 @@ def get_menu_or_404(menu_id: str, db: Session):
     if menu:
         return menu
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail=MENU_NOT_F
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=MENU_NOT_F,
     )
 
 
 def get_submenu_or_404(menu_id: str, submenu_id: str, db: Session):
     db_menu = get_menu_or_404(menu_id=menu_id, db=db)
     db_submenu = crud.get_submenu_by_id(
-        db, menu=db_menu, submenu_id=submenu_id
+        db,
+        menu=db_menu,
+        submenu_id=submenu_id,
     )
     if db_submenu:
         return db_submenu
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail=SUBMENU_NOT_F
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=SUBMENU_NOT_F,
     )
 
 
 def get_submenu_or_empty_list(
-    menu_id: str, submenu_id: str, db: Session
+    menu_id: str,
+    submenu_id: str,
+    db: Session,
 ) -> models.SubMenu | list:
     db_menu = get_menu_or_404(menu_id=menu_id, db=db)
     db_submenu = crud.get_submenu_by_id(
-        db, menu=db_menu, submenu_id=submenu_id
+        db,
+        menu=db_menu,
+        submenu_id=submenu_id,
     )
     if db_submenu:
         return db_submenu
@@ -337,13 +432,16 @@ def get_submenu_or_empty_list(
 
 def get_dish_or_404(menu_id: str, submenu_id: str, dish_id: str, db: Session):
     db_submenu = get_submenu_or_404(
-        menu_id=menu_id, submenu_id=submenu_id, db=db
+        menu_id=menu_id,
+        submenu_id=submenu_id,
+        db=db,
     )
     db_dish = crud.get_dish_by_id(db=db, submenu=db_submenu, dish_id=dish_id)
     if db_dish:
         return db_dish
     raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND, detail=DISH_NOT_F
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail=DISH_NOT_F,
     )
 
 

@@ -3,10 +3,18 @@ from fastapi.testclient import TestClient
 
 from app.api.api_v1.menu import DISH_NOT_F, TITLE_REGISTERED
 from app.crud import DEL_DISH_RESULT
-from app.tests.data import (data_dish, data_dish_description, data_dish_title,
-                            data_menu, data_price, data_submenu, data_up_dish,
-                            data_up_dish_description, data_up_dish_title,
-                            data_up_price)
+from app.tests.data import (
+    data_dish,
+    data_dish_description,
+    data_dish_title,
+    data_menu,
+    data_price,
+    data_submenu,
+    data_up_dish,
+    data_up_dish_description,
+    data_up_dish_title,
+    data_up_price,
+)
 
 
 class TestDish:
@@ -17,7 +25,7 @@ class TestDish:
         submenu_id = submenu.json()["id"]
 
         response = client.get(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/not_found"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/not_found",
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
         assert response.json()["detail"] == DISH_NOT_F
@@ -37,11 +45,13 @@ class TestDish:
         submenu = client.post(f"/{menu_id}/submenus", json=data_submenu)
         submenu_id = submenu.json()["id"]
         dish = client.post(
-            f"/{menu_id}/submenus/{submenu_id}/dishes", json=data_dish
+            f"/{menu_id}/submenus/{submenu_id}/dishes",
+            json=data_dish,
         )
         assert dish.status_code == status.HTTP_201_CREATED
         response = client.post(
-            f"/{menu_id}/submenus/{submenu_id}/dishes", json=data_dish
+            f"/{menu_id}/submenus/{submenu_id}/dishes",
+            json=data_dish,
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.json()["detail"] == TITLE_REGISTERED
@@ -52,7 +62,8 @@ class TestDish:
         submenu = client.post(f"/{menu_id}/submenus", json=data_submenu)
         submenu_id = submenu.json()["id"]
         dish = client.post(
-            f"/{menu_id}/submenus/{submenu_id}/dishes", json=data_dish
+            f"/{menu_id}/submenus/{submenu_id}/dishes",
+            json=data_dish,
         )
         assert dish.status_code == status.HTTP_201_CREATED
         assert dish.json()["title"] == data_dish_title
@@ -62,7 +73,7 @@ class TestDish:
         dish_id = dish.json()["id"]
 
         response = client.get(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["id"] == dish_id
@@ -82,7 +93,7 @@ class TestDish:
         assert dish.json()["id"] == dish_id
 
         response = client.get(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json()["id"] == dish_id
@@ -91,13 +102,13 @@ class TestDish:
         assert response.json()["price"] == data_up_price
 
         response = client.delete(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
         )
         assert response.status_code == status.HTTP_200_OK
         assert response.json() == DEL_DISH_RESULT
 
         response = client.get(
-            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}"
+            f"/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}",
         )
         assert response.status_code == status.HTTP_404_NOT_FOUND
 

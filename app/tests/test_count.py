@@ -20,7 +20,8 @@ class TestCount:
         for i_submenu in range(1, count_submenu + 1):
             datacopy_submenu["title"] = f"Title {i_submenu}"
             submenu = client.post(
-                f"/{menu_id}/submenus", json=datacopy_submenu
+                f"/{menu_id}/submenus",
+                json=datacopy_submenu,
             )
             assert submenu.status_code == status.HTTP_201_CREATED
             submenu_id = submenu.json()["id"]
