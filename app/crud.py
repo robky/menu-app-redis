@@ -47,7 +47,7 @@ def patch_menu(
     return db_menu
 
 
-def delete_menu(db: Session, db_menu: models.Menu) -> dict[str: bool | str]:
+def delete_menu(db: Session, db_menu: models.Menu) -> dict[str, object]:
     db.delete(db_menu)
     db.commit()
     return DEL_MENU_RESULT
@@ -106,7 +106,7 @@ def patch_submenu(
 def delete_submenu(
     db: Session,
     db_submenu: models.SubMenu,
-) -> dict[str: bool | str]:
+) -> dict[str, object]:
     db_submenu.menu.dishes_count -= db_submenu.dishes_count
     db_submenu.menu.submenus_count -= 1
     db.delete(db_submenu)
@@ -114,7 +114,7 @@ def delete_submenu(
     return DEL_SUBMENU_RESULT
 
 
-def update_object(data: dict[str:str], obj: object, db: Session) -> None:
+def update_object(data: dict[str, str], obj: object, db: Session) -> None:
     for key, value in data.items():
         setattr(obj, key, value)
     db.commit()
@@ -179,7 +179,7 @@ def patch_dish(
     return db_dish
 
 
-def delete_dish(db: Session, db_dish: models.Dish) -> dict[str: bool | str]:
+def delete_dish(db: Session, db_dish: models.Dish) -> dict[str, object]:
     db_dish.submenu.dishes_count -= 1
     db_dish.submenu.menu.dishes_count -= 1
     db.delete(db_dish)

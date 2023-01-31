@@ -21,8 +21,8 @@ http://62.217.182.151:8000/redoc
 ```
 
 ### Изменения
-Добавлено автоматические контрольные тесты перед добавлением в git. 
-Добавлено кеширование ответов при помощи redis. 
+Добавлено автоматические контрольные тесты перед добавлением в git.
+Добавлено кеширование ответов при помощи redis.
 Написаны тесты для проверки кеширования.
 
 ### Технологии
@@ -46,7 +46,7 @@ git clone https://github.com/robky/menu-app-redis.git
 cd menu-app-redis
 ```
 
-Переименовать файлы .env.example и .env_test.example 
+Переименовать файлы .env.example и .env_test.example
 ```
 mv .env.example .env
 mv .env_test.example .env_test

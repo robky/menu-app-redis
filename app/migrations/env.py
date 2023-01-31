@@ -1,13 +1,10 @@
-import sys
 from logging.config import fileConfig
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-sys.path = ["", ".."] + sys.path[1:]
-
 from app.database import SQLALCHEMY_DATABASE_URL
-from app.models import *
+from app.models import Base
 
 config = context.config
 

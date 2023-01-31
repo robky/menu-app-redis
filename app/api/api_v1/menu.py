@@ -256,13 +256,13 @@ def read_dishes(
 ):
     if cache_data := cache.get(f"submenu:{submenu_id}:dishes"):
         return pickle.loads(cache_data)
-    db_submenu = get_submenu_or_empty_list(
+    db_submenu = get_submenu_or_none(
         menu_id=menu_id,
         submenu_id=submenu_id,
         db=db,
     )
-    if not db_submenu:
-        return db_submenu
+    if db_submenu is None:
+        return []
     result = crud.get_all_dish(db_submenu=db_submenu)
     cache.set(f"submenu:{submenu_id}:dishes", pickle.dumps(result))
     return result
@@ -414,11 +414,11 @@ def get_submenu_or_404(menu_id: str, submenu_id: str, db: Session):
     )
 
 
-def get_submenu_or_empty_list(
+def get_submenu_or_none(
     menu_id: str,
     submenu_id: str,
     db: Session,
-) -> models.SubMenu | list:
+) -> models.SubMenu | None:
     db_menu = get_menu_or_404(menu_id=menu_id, db=db)
     db_submenu = crud.get_submenu_by_id(
         db,
@@ -427,7 +427,7 @@ def get_submenu_or_empty_list(
     )
     if db_submenu:
         return db_submenu
-    return []
+    return None
 
 
 def get_dish_or_404(menu_id: str, submenu_id: str, dish_id: str, db: Session):

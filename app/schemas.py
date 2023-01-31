@@ -8,6 +8,9 @@ class MenuBase(BaseModel):
 
 
 class MenuCreate(MenuBase):
+    title: str = Field(title="Наименование меню")
+    description: str = Field(title="Описание меню")
+
     class Config:
         schema_extra = {
             "example": {
@@ -39,6 +42,9 @@ class SubMenu(MenuBase):
 
 
 class SubMenuCreate(MenuBase):
+    title: str = Field(title="Наименование подменю")
+    description: str = Field(title="Описание подменю")
+
     class Config:
         schema_extra = {
             "example": {
@@ -58,6 +64,10 @@ class DishBase(BaseModel):
 
 
 class DishCreate(DishBase):
+    title: str = Field(title="Наименование блюда")
+    description: str = Field(title="Описание блюда")
+    price: str = Field(title="Стоимость блюда")
+
     class Config:
         schema_extra = {
             "example": {
