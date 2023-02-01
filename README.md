@@ -84,7 +84,7 @@ mv .env_test.example .env_test
 
 Запустить контейнер с тестами
 ```
-docker-compose -f docker-compose-tests.yml up
+docker-compose -f docker-compose-tests.yml up -d
 ```
 
 После окончания тестов, контейнер останется работать и будет доступен на 9000 порту для postman тестов.
