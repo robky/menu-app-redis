@@ -59,13 +59,12 @@ cd menu-app-redis
 
 ### Как запустить рабочий проект:
 
-Переименовать файлы .env_prod.example и .env_test.example
+Переименовать файлы .env_prod.example
 ```
 mv .env_prod.example .env_prod
-mv .env_test.example .env_test
 ```
 
-Заполнить файлы .env_prod и .env_test актуальными данными согласно примеру.
+Заполнить файлы .env_prod актуальными данными согласно примеру.
 
 Запустить контейнер c рабочим проектом
 ```
@@ -75,6 +74,13 @@ docker-compose up -d
 
 
 ### Как запустить тестовый проект:
+
+Переименовать файлы .env_test.example
+```
+mv .env_test.example .env_test
+```
+Заполнить файлы .env_test актуальными данными согласно примеру.
+
 
 Запустить контейнер с тестами
 ```
