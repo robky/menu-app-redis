@@ -28,12 +28,6 @@ SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 @pytest.fixture(scope="function")
 def app() -> Generator[FastAPI, Any, None]:
     app = FastAPI()
-
-    # app.include_router(
-    #     menu.router,
-    #     prefix="/api/v1/menus",
-    # )
-
     app.include_router(menu.router)
     yield app
 

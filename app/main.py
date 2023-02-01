@@ -9,12 +9,12 @@ def custom_openapi():
         return app.openapi_schema
     openapi_schema = get_openapi(
         title="Ресторанное меню",
-        version="0.3.2",
+        version="1.3.3",
         description="Это настроенная схема OpenAPI для взаимодействия с меню.",
         routes=app.routes,
     )
     openapi_schema["info"]["x-logo"] = {
-        "url": "https://lirp.cdn-website.com/b359ad59/dms3rep/multi/opt/iconamenugruppi-960w.png",
+        "url": "https://clck.ru/33RUW5",
     }
     app.openapi_schema = openapi_schema
     return app.openapi_schema

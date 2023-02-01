@@ -11,8 +11,10 @@ services:
              uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000"
     volumes:
       - ./:/app/
+    environment:
+      - CONFIG_FILE=../.env_prod
     env_file:
-      - ./.env
+      - ./.env_prod
     ports:
       - "8000:8000"
     depends_on:
@@ -20,15 +22,13 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    networks:
-      - menu_network
 
   db:
     image: postgres:15.1-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
-      - .env
+      - .env_prod
     ports:
       - "5432:5432"
     healthcheck:
@@ -36,17 +36,13 @@ services:
       interval: 1s
       timeout: 3s
       retries: 10
-    networks:
-      - menu_network
 
   redis:
     image: redis:latest
     env_file:
-      - .env
+      - .env_prod
     ports:
       - "6379:6379"
-    networks:
-      - menu_network
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 1s
@@ -55,8 +51,3 @@ services:
 
 volumes:
     postgres_data:
-
-networks:
-  menu_network:
-    name: menu_network
-    external: false

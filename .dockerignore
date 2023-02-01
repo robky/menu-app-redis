@@ -91,5 +91,5 @@ venv/
 # Pycharm
 .idea/
 
-.env
+.env_prod
 .env_test
