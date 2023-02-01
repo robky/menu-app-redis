@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   server:
+    container_name: menu_server
     build: .
     restart: always
     command: >
@@ -24,25 +25,23 @@ services:
         condition: service_healthy
 
   db:
+    container_name: menu_db
     image: postgres:15.1-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
       - .env_prod
-    ports:
-      - "5432:5432"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}" ]
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 1s
       timeout: 3s
       retries: 10
 
   redis:
+    container_name: menu_redis
     image: redis:latest
     env_file:
       - .env_prod
-    ports:
-      - "6379:6379"
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 1s
